@@ -1,703 +1,593 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Profile</title>
-
   <meta name="description" content="A Custom Made Profile Page">
-
   <meta property="og:title" content="X">
-
   <meta property="og:description" content="A Custom Made Profile Page">
-
-  <meta property="og:image" content="https://ibb.co/hx7QhNmD">
-
+  <meta property="og:image" content="https://cdn.discordapp.com/attachments/1337511198416965632/1382574130829721683/banner.gif?ex=684ba5ff&is=684a547f&hm=b7f956a33aac665f3adbeba61a33f414db52990427f4e060c7c48acb9cfad899&">
   <meta property="og:type" content="website">
-
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-
   <style>
-
     :root {
-
       --accent: #ff914d;
-
       --transition: 0.3s ease;
-
       --progress-bg: #2e2e2e;
-
-      --progress-fill: #1db954;
-
+      --progress-fill: var(--accent);
+      --glow-color: var(--accent);
     }
-
     html, body {
-
       user-select: none;
-
       -webkit-user-select: none;
-
       -webkit-touch-callout: none;
-
     }
-
-    img, video, audio {
-
+    /* Only disable pointer events for general images not meant for interaction */
+    img:not(.interactive-img):not(.pfp):not(.cover):not(.banner) {
       pointer-events: none;
-
     }
 
     body.light {
-
       --bg: #ffffff;
-
       --text: #111111;
-
       --glass: rgba(0, 0, 0, 0.08);
-
+      --progress-bg: #e0e0e0;
     }
-
     body.dark {
-
       --bg: #0d0d12;
-
       --text: #f0f0f0;
-
       --glass: rgba(255, 255, 255, 0.07);
-
+      --progress-bg: #2e2e2e;
     }
-
     * {
-
       margin: 0;
-
       padding: 0;
-
       box-sizing: border-box;
-
-      transition: background var(--transition), color var(--transition), transform 0.2s ease;
-
+      transition: background var(--transition), color var(--transition), transform 0.2s ease, box-shadow var(--transition);
     }
-
     html, body {
-
       height: 100%;
-
       font-family: 'Space Grotesk', sans-serif;
-
       background: var(--bg);
-
       color: var(--text);
-
       overflow-x: hidden;
-
     }
-
     body::before {
-
       content: "";
-
       position: fixed;
-
       top: 0; left: 0;
-
       width: 100%; height: 100%;
-
       background: url('background.gif') center/cover no-repeat;
-
       z-index: -2;
-
     }
-
     .overlay {
-
       position: fixed;
-
       inset: 0;
-
       background: rgba(0, 0, 0, 0.5);
-
       backdrop-filter: blur(6px);
-
       z-index: -1;
-
     }
-
     .splash {
-
       position: fixed;
-
       inset: 0;
-
       background: black;
-
       display: flex;
-
       align-items: center;
-
       justify-content: center;
-
       flex-direction: column;
-
       color: white;
-
       cursor: pointer;
-
       z-index: 20;
-
       animation: fadeInUp 1s ease-out;
-
     }
-
     .splash h1 {
-
       font-size: 2rem;
-
       animation: pulse 1.2s ease-in-out infinite;
-
     }
-
     @keyframes pulse {
-
       0%, 100% { transform: scale(1); }
-
       50% { transform: scale(1.08); }
-
     }
-
     @keyframes fadeInUp {
-
       0% { opacity: 0; transform: translateY(30px); }
-
       100% { opacity: 1; transform: translateY(0); }
-
     }
-
     .loading {
-
       position: fixed;
-
       inset: 0;
-
       background: black;
-
       color: white;
-
       display: none;
-
       align-items: center;
-
       justify-content: center;
-
       flex-direction: column;
-
       z-index: 19;
-
     }
-
     .loader {
-
       width: 40px;
-
       height: 40px;
-
-      border: 5px solid orange;
-
+      border: 5px solid var(--accent);
       border-top: 5px solid transparent;
-
       border-radius: 50%;
-
       animation: spin 1s linear infinite;
-
       margin-bottom: 15px;
-
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .card {
-
       background: var(--glass);
-
       border-radius: 20px;
-
       max-width: 420px;
-
-      margin: 120px auto;
-
+      width: 90%; /* Make card responsive */
+      margin: 100px auto; /* Adjust margin for smaller screens */
       text-align: center;
-
       backdrop-filter: blur(15px);
-
       box-shadow: 0 0 20px rgba(0,0,0,0.2);
-
-      animation: fadeInUp 1s ease forwards;
-
       overflow: hidden;
-
+      opacity: 0;
+      transform: translateY(50px) scale(0.9);
     }
-
+    @keyframes cardIntro {
+        0% { opacity: 0; transform: translateY(50px) scale(0.9); }
+        30% { opacity: 0; transform: translateY(50px) scale(0.9); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .card.animate-in {
+        animation: cardIntro 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
     .pfp {
-
       width: 110px;
-
       height: 110px;
-
       margin: -55px auto 10px;
-
       border-radius: 50%;
-
       border: 4px solid var(--bg);
-
       background: url('pfp.gif') center/cover no-repeat;
-
       position: relative;
-
+      background-size: cover; /* Ensure pfp covers area */
     }
-
     .banner {
-
       width: 100%;
-
       height: 150px;
-
       background: url('banner.gif') center/cover no-repeat;
-
       border-top-left-radius: 20px;
-
       border-top-right-radius: 20px;
-
+      background-size: cover; /* Ensure banner covers area */
     }
-
     .buttons {
-
       margin-top: 20px;
-
       display: flex;
-
       flex-wrap: wrap;
-
       justify-content: center;
-
       gap: 10px;
-
+      padding-bottom: 20px;
+      padding-left: 10px; /* Add some padding for mobile */
+      padding-right: 10px; /* Add some padding for mobile */
     }
-
     .buttons a {
-
       padding: 10px 20px;
-
       background: var(--accent);
-
       color: white;
-
       border-radius: 8px;
-
       text-decoration: none;
-
       font-weight: bold;
-
       display: flex;
-
       align-items: center;
-
       gap: 8px;
-
       transition: all 0.3s ease;
-
+      position: relative;
+      overflow: hidden;
+      flex-grow: 1; /* Allow buttons to grow and fill space */
+      max-width: 180px; /* Limit button width on larger screens */
+      justify-content: center; /* Center content within button */
     }
-
     .buttons a:hover {
-
       transform: scale(1.08);
-
-      box-shadow: 0 5px 20px rgba(255, 145, 77, 0.5);
-
+      box-shadow: 0 5px 20px var(--glow-color); /* Use glow color for shadow */
+    }
+    .buttons a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, var(--glow-color) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        transform: scale(1.5);
+        z-index: -1;
+        pointer-events: none;
+    }
+    .buttons a:hover::before {
+        opacity: 0.5;
+        transform: scale(1);
     }
 
     .buttons a img {
-
       width: 20px;
-
       height: 20px;
-
       object-fit: contain;
-
+      pointer-events: none;
     }
-
-    .toggle-mode {
-
-      position: fixed;
-
-      top: 20px;
-
-      right: 20px;
-
+    .top-buttons-container {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        display: flex;
+        gap: 8px;
+        z-index: 30;
+    }
+    .top-button {
       background: var(--glass);
-
       backdrop-filter: blur(10px);
-
       border: none;
-
       padding: 10px;
-
       border-radius: 50%;
-
       cursor: pointer;
-
-      z-index: 30;
-
+      font-size: 18px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
     }
+    .top-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    /* --- Removed tooltip styles since the elements are gone --- */
 
-    .toggle-mode::before { content: '🌙'; font-size: 18px; }
-
+    .toggle-mode::before { content: '🌙'; }
     body.light .toggle-mode::before { content: '☀️'; }
 
     .song-info {
-
       display: flex;
-
       flex-direction: column;
-
       align-items: center;
-
       justify-content: center;
-
       margin-top: 0;
-
       gap: 5px;
-
+      padding-bottom: 20px;
     }
-
     .song-info img.cover {
-
       width: 40px;
-
       height: 40px;
-
       border-radius: 8px;
-
+      pointer-events: auto;
     }
-
     .info p {
-
       margin: 0;
-
       font-size: 0.9rem;
-
     }
-
     .song-info button {
-
       background: var(--accent);
-
       border: none;
-
       border-radius: 6px;
-
       width: 35px;
-
       height: 35px;
-
       padding: 5px;
-
       cursor: pointer;
-
       display: flex;
-
       align-items: center;
-
       justify-content: center;
-
       margin-top: -25px;
-
     }
-
     .song-info button img {
-
       width: 20px;
-
       height: 20px;
-
+      pointer-events: none;
     }
-
     .progress {
-
       width: 88%;
-
       height: 8px;
-
       background-color: var(--progress-bg);
-
       border-radius: 4px;
-
       overflow: hidden;
-
       margin: 6px auto 0;
-
     }
-
     .progress-fill {
-
       height: 100%;
-
       background-color: var(--progress-fill);
-
       width: 0%;
-
       transition: width 0.5s ease;
-
     }
-
     .time-stamp {
-
       display: flex;
-
       justify-content: space-between;
-
       width: 88%;
-
       font-size: 0.75rem;
-
       margin: 4px auto 0;
-
     }
 
+    /* Color picker styles */
+    .color-picker-popup {
+        position: absolute;
+        top: 60px;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        border-radius: 10px;
+        padding: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: visibility 0.3s, opacity 0.3s, transform 0.3s;
+        z-index: 31;
+        max-width: 280px;
+        box-sizing: border-box;
+        left: auto;
+    }
+    .color-picker-popup.show {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .color-box {
+        width: 28px;
+        height: 28px;
+        border-radius: 5px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: border 0.2s ease, transform 0.2s ease;
+    }
+    .color-box:hover {
+        transform: scale(1.15);
+        border-color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 600px) {
+      .card {
+        margin: 50px auto;
+        width: 95%;
+      }
+      .top-buttons-container {
+        top: 10px;
+        right: 10px;
+        gap: 5px;
+      }
+      .top-button {
+        padding: 8px;
+        font-size: 16px;
+      }
+      /* --- Removed tooltip styles for media query as well --- */
+      .color-picker-popup {
+        top: 50px;
+        right: 0;
+        max-width: calc(100vw - 30px);
+        padding: 5px;
+        gap: 4px;
+        flex-wrap: wrap;
+      }
+      .color-box {
+        width: 24px;
+        height: 24px;
+      }
+    }
   </style>
-
 </head>
-
 <body class="dark">
-
   <div class="overlay"></div>
 
   <div class="splash" onclick="enterSite()">
-
     <h1>Tap Here ✦</h1>
-
   </div>
 
   <div class="loading" id="loadingScreen">
-
     <div class="loader"></div>
-
     <p id="loadingText">Initializing...</p>
-
   </div>
 
-  <button class="toggle-mode" onclick="toggleTheme()"></button>
+  <div class="top-buttons-container" id="topButtons" style="display:none;">
+    <button class="top-button toggle-mode" onclick="toggleTheme(event)">
+        </button>
+    <button class="top-button color-picker-toggle" onclick="toggleColorPicker(event)">
+        🎨
+        <div class="color-picker-popup" id="colorPickerPopup">
+            </div>
+    </button>
+    <button class="top-button gumroad-button" onclick="redirectToGumroad(event)">
+        💲
+        </button>
+  </div>
+
 
   <div class="card" id="mainCard" style="display:none;">
-
     <div class="banner"></div>
-
     <div class="pfp"></div>
-
     <h2>Blader X</h2>
-
     <p>Human | Developer | Designer</p>
-
     <div class="buttons">
-
-      <a onclick="playAndRedirect('https://discord.gg/TYMVHDZ3T8')"><img src="discord.png"> Discord</a>
-
-      <a onclick="playAndRedirect('https://aspect0093.github.io/Guildify/')"><img src="guildify.png"> Guildify</a>
-
-      <a onclick="playAndRedirect('https://www.instagram.com/aspect_.93/')"><img src="instagram.png"> Instagram</a>
-
+      <a onclick="playAndRedirect('https://discord.gg/TYMVHDZ3T8')" class="interactive-img-link"><img src="discord.png" class="interactive-img"> Discord</a>
+      <a onclick="playAndRedirect('https://aspect0093.github.io/Guildify/')" class="interactive-img-link"><img src="guildify.png" class="interactive-img"> Guildify</a>
+      <a onclick="playAndRedirect('https://www.instagram.com/aspect_.93/')" class="interactive-img-link"><img src="instagram.png" class="interactive-img"> Instagram</a>
     </div>
-
     <div class="song-info">
-
       <img class="cover" src="song-cover.png" alt="Cover">
-
       <div class="info">
-
         <p>I Really Want To Stay At Your House</p>
-
         <p>KyotoJam</p>
-
         <div class="progress"><div class="progress-fill" id="progressBar"></div></div>
-
         <div class="time-stamp"><span id="currentTime">0:00</span><span id="totalTime">0:00</span></div>
-
       </div>
-
       <button onclick="toggleMusic()">
-
         <img id="playPauseIcon" src="pause.png">
-
       </button>
-
     </div>
-
   </div>
 
   <audio id="bgmusic" loop autoplay>
-
     <source src="song.mp3" type="audio/mpeg">
-
   </audio>
-
   <audio id="clickSound"><source src="click.mp3" type="audio/mpeg"></audio>
-
   <audio id="doneSfx"><source src="thankyou.mp3" type="audio/mpeg"></audio>
 
   <script>
-
     const music = document.getElementById('bgmusic');
-
     const icon = document.getElementById('playPauseIcon');
-
     const loadText = document.getElementById('loadingText');
-
     const progressBar = document.getElementById('progressBar');
-
     const currentTimeEl = document.getElementById('currentTime');
-
     const totalTimeEl = document.getElementById('totalTime');
-
     const doneSfx = document.getElementById('doneSfx');
+    const mainCard = document.getElementById('mainCard');
+    const topButtons = document.getElementById('topButtons');
+    const colorPickerPopup = document.getElementById('colorPickerPopup');
+    const root = document.documentElement; // For CSS variables
 
     const phrases = [
-
       "Initializing...", "Launching UI...", "Loading assets...", "Applying theme...",
-
       "Connecting systems...", "Starting engine...", "Activating profile...",
-
       "Bootstrapping UI...", "Finalizing setup...", "Rendering components...",
-
       "Almost there...", "Let’s begin!"
-
     ];
 
+    const colors = [
+      '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#A133FF', '#33FFF6', '#FFD700', '#FF4500',
+      '#8A2BE2', '#00FA9A', '#DC143C', '#20B2AA', '#FF6347', '#4682B4', '#DA70D6', '#FF8C00',
+      '#ADFF2F', '#00CED1', '#FF1493', '#7B68EE'
+    ];
+
+    // Function to request fullscreen
+    function requestFullscreen() {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) { /* Firefox */
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+            document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) { /* IE/Edge */
+            document.documentElement.msRequestFullscreen();
+        }
+    }
+
     function enterSite() {
-
       document.getElementById('clickSound').play();
-
+      requestFullscreen(); // Attempt fullscreen on user interaction
       document.querySelector('.splash').style.display = 'none';
-
       const loading = document.getElementById('loadingScreen');
-
       loading.style.display = 'flex';
 
       let count = 0;
-
       const interval = setInterval(() => {
-
         loadText.innerText = phrases[count % phrases.length];
-
         count++;
-
       }, 250);
 
       setTimeout(() => {
-
         clearInterval(interval);
-
         loading.style.display = 'none';
-
-        document.getElementById('mainCard').style.display = 'block';
-
+        mainCard.style.display = 'block';
+        mainCard.classList.add('animate-in'); // Trigger card intro animation
+        topButtons.style.display = 'flex'; // Show top buttons
         music.play();
-
         updateProgress();
-
       }, 3500);
-
     }
 
-    function toggleTheme() {
-
+    function toggleTheme(event) {
       document.body.classList.toggle('dark');
-
       document.body.classList.toggle('light');
-
     }
 
     function toggleMusic() {
-
       if (music.paused) {
-
         music.play();
-
-        icon.src = 'pause.png';
-
       } else {
-
         music.pause();
-
-        icon.src = 'play.png';
-
       }
-
     }
 
+    // Listen for music play/pause events to update button icon
+    music.addEventListener('play', () => {
+      icon.src = 'pause.png';
+    });
+    music.addEventListener('pause', () => {
+      icon.src = 'play.png';
+    });
+
     function playAndRedirect(url) {
-
       document.getElementById('clickSound').play();
-
       setTimeout(() => {
-
         doneSfx.play();
-
         window.location.href = url;
-
       }, 3000);
-
     }
 
     function updateProgress() {
-
       function tryUpdateEndTime() {
-
         if (!isNaN(music.duration)) {
-
           totalTimeEl.textContent = formatTime(music.duration);
-
         } else {
-
           setTimeout(tryUpdateEndTime, 200);
-
         }
-
       }
-
       tryUpdateEndTime();
 
-      setInterval(() => {
-
+      // Update progress bar and current time
+      music.addEventListener('timeupdate', () => {
         if (!isNaN(music.duration)) {
-
           const progress = (music.currentTime / music.duration) * 100;
-
           progressBar.style.width = progress + '%';
-
           currentTimeEl.textContent = formatTime(music.currentTime);
-
         }
-
-      }, 500);
-
+      });
     }
 
     function formatTime(seconds) {
-
       const mins = Math.floor(seconds / 60);
-
       const secs = Math.floor(seconds % 60);
-
       return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-
     }
 
+    // Color picker functions
+    function createColorPicker() {
+        colors.forEach(color => {
+            const colorBox = document.createElement('div');
+            colorBox.classList.add('color-box');
+            colorBox.style.backgroundColor = color;
+            colorBox.addEventListener('click', () => setAccentColor(color));
+            colorPickerPopup.appendChild(colorBox);
+        });
+    }
+
+    function setAccentColor(color) {
+        root.style.setProperty('--accent', color);
+        root.style.setProperty('--glow-color', color); // Update glow color too
+        // Optionally hide the color picker after selection
+        colorPickerPopup.classList.remove('show');
+    }
+
+    function toggleColorPicker(event) {
+        // Stop event propagation to prevent immediate closing from document click listener
+        event.stopPropagation();
+        colorPickerPopup.classList.toggle('show');
+    }
+
+    // Redirect to Gumroad
+    function redirectToGumroad(event) {
+        document.getElementById('clickSound').play();
+        window.open('https://aspect93.gumroad.com/coffee', '_blank');
+    }
+
+    // Initialize color picker on page load
+    document.addEventListener('DOMContentLoaded', createColorPicker);
+
+    // Close color picker if clicked outside (only if it's open)
+    document.addEventListener('click', (event) => {
+        const colorPickerToggle = document.querySelector('.color-picker-toggle');
+        if (colorPickerPopup.classList.contains('show') && !colorPickerPopup.contains(event.target) && !colorPickerToggle.contains(event.target)) {
+            colorPickerPopup.classList.remove('show');
+        }
+    });
+
+    // --- Removed touch event listener for tooltips as they are no longer needed ---
+
   </script>
-
 </body>
-
-      </html>
+</html>
